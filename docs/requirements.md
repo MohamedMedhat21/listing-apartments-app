@@ -86,6 +86,8 @@ Do not implement these without an explicit decision to expand scope:
 
 Exact patch versions are pinned in each `package.json` at install time. Do not add a dependency that is not listed here without approval.
 
+**Accepted risk:** `npm audit` reports 3 high-severity findings (`multer`, `picomatch`, and `@nestjs/platform-express` itself) that are only fixable by bumping NestJS 10.x to 11.x. This is a deliberate decision to stay on the pinned version rather than take an unplanned major upgrade: `multer`'s CVEs are all denial-of-service via malicious multipart file uploads, and section 2.3 explicitly puts file upload out of scope — the vulnerable code path is never wired up, so it is not reachable attack surface in this application. All other vulnerabilities reachable through the pinned versions (`glob`, `tmp`, `webpack`, all confined to `@nestjs/cli`'s build-time tooling) are resolved via `overrides` in the root `package.json`.
+
 ---
 
 ## 4. Architecture

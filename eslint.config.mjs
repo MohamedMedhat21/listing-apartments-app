@@ -27,8 +27,17 @@ export default tseslint.config(
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-      '@typescript-eslint/consistent-type-imports': 'error',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
+      // Deliberately NOT enabling @typescript-eslint/consistent-type-imports:
+      // its autofix converts constructor-parameter imports to `import type`
+      // whenever a class is only referenced as a type in that file. NestJS's
+      // DI container reads the runtime class reference via reflect-metadata,
+      // so that "fix" silently breaks dependency injection. `lint-staged`
+      // runs `eslint --fix` from the repo root during every commit, and
+      // ESLint's flat config resolves from cwd only (it does not search
+      // into subdirectories for a nearer config), so a per-app override
+      // cannot shield apps/api from this rule during a commit. Not enabling
+      // it anywhere is the only reliable fix.
     },
   },
 );

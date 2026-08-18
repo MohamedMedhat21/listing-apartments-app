@@ -33,15 +33,15 @@ flowchart TD
 
 **Goal:** an empty but fully-wired monorepo where tooling enforces the rules before any feature code exists.
 
-- [ ] `package.json` at the root declaring npm workspaces: `apps/*`, `packages/*`
-- [ ] `apps/api` scaffolded with NestJS 10, `apps/web` scaffolded with Next.js 16 (App Router, TypeScript)
-- [ ] `packages/shared` for types and enums consumed by both apps
-- [ ] `tsconfig.base.json` with `strict: true`, extended by every workspace
-- [ ] ESLint 9 flat config and Prettier, shared across workspaces
-- [ ] Husky with a pre-commit hook running lint-staged, and commitlint enforcing Conventional Commits
-- [ ] `.env.example` documenting every variable, with no real secrets
-- [ ] `.gitignore`, `.dockerignore`
-- [ ] Root scripts: `lint`, `typecheck`, `test`, `dev`, `build`
+- [x] `package.json` at the root declaring npm workspaces: `apps/*`, `packages/*`
+- [x] `apps/api` scaffolded with NestJS 10, `apps/web` scaffolded with Next.js 16 (App Router, TypeScript)
+- [x] `packages/shared` for types and enums consumed by both apps
+- [x] `tsconfig.base.json` with `strict: true`, extended by every workspace
+- [x] ESLint 9 flat config and Prettier, shared across workspaces
+- [x] Husky with a pre-commit hook running lint-staged, and commitlint enforcing Conventional Commits
+- [x] `.env.example` documenting every variable, with no real secrets
+- [x] `.gitignore`, `.dockerignore`
+- [x] Root scripts: `lint`, `typecheck`, `test`, `dev`, `build`
 
 **Exit condition:** `npm install`, `npm run lint`, and `npm run typecheck` all pass at the root. A commit with a non-conventional message is rejected by the hook.
 
