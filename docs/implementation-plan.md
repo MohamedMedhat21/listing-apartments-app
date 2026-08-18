@@ -51,17 +51,17 @@ flowchart TD
 
 **Goal:** the schema from `requirements.md` section 5 exists in PostgreSQL via migrations, populated with realistic data.
 
-- [ ] TypeORM `DataSource` configured from validated environment variables, `synchronize: false` permanently
-- [ ] Snake-case naming strategy so TypeScript stays camelCase while the database stays `snake_case`
-- [ ] Entities: `Developer`, `Project`, `Apartment`, `User`, with relations per BR-1
-- [ ] `@DeleteDateColumn` on `deletedAt` for the three domain entities
-- [ ] Migration enabling the `pg_trgm` extension
-- [ ] Migration creating all tables, both enum types, and foreign keys with `ON DELETE RESTRICT`
-- [ ] Migration creating the partial unique index `(project_id, unit_number) WHERE deleted_at IS NULL` (BR-3) and the equivalent on `projects` and `developers`
-- [ ] Migration creating the GIN trigram indexes and the btree indexes listed in section 5.3
-- [ ] Check constraints for `price > 0`, `area_sqm > 0`, `bedrooms >= 0`, `bathrooms >= 0` (BR-15)
-- [ ] Idempotent seed script: ~5 developers, ~10 projects, ~40 apartments, plus one ADMIN user whose password comes from the environment
-- [ ] `npm run migration:run`, `migration:revert`, `migration:generate`, `seed` scripts
+- [x] TypeORM `DataSource` configured from validated environment variables, `synchronize: false` permanently
+- [x] Snake-case naming strategy so TypeScript stays camelCase while the database stays `snake_case`
+- [x] Entities: `Developer`, `Project`, `Apartment`, `User`, with relations per BR-1
+- [x] `@DeleteDateColumn` on `deletedAt` for the three domain entities
+- [x] Migration enabling the `pg_trgm` extension
+- [x] Migration creating all tables, both enum types, and foreign keys with `ON DELETE RESTRICT`
+- [x] Migration creating the partial unique index `(project_id, unit_number) WHERE deleted_at IS NULL` (BR-3) and the equivalent on `projects` and `developers`
+- [x] Migration creating the GIN trigram indexes and the btree indexes listed in section 5.3
+- [x] Check constraints for `price > 0`, `area_sqm > 0`, `bedrooms >= 0`, `bathrooms >= 0` (BR-15)
+- [x] Idempotent seed script: ~5 developers, ~10 projects, ~40 apartments, plus one ADMIN user whose password comes from the environment
+- [x] `npm run migration:run`, `migration:revert`, `migration:generate`, `seed` scripts
 
 **Tests:** an integration test proving the partial unique index rejects a duplicate live unit number but permits reuse after a soft delete (BR-3, BR-7).
 

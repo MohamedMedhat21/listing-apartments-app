@@ -28,6 +28,7 @@ The bonus requirement — search by unit name, unit number, or project — is tr
 | Frontend       | Next.js 16.x, App Router                                       |
 | Styling        | Tailwind CSS 4.x + shadcn/ui                                   |
 | Forms          | react-hook-form + zod                                          |
+| Validation     | zod (frontend forms; also the backend's env-schema validation) |
 | Repo           | npm workspaces: `apps/api`, `apps/web`, `packages/shared`      |
 | Auth           | `@nestjs/jwt` + Passport JWT, `bcrypt` cost 12                 |
 | API docs       | `@nestjs/swagger`                                              |
