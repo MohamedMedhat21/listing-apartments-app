@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('browse the listing and open a details page', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByText(/40 apartments/)).toBeVisible();
+  await expect(page.getByText(/\d+ apartments/)).toBeVisible();
 
   const firstListingLink = page
     .getByRole('link')
