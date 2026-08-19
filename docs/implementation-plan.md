@@ -299,6 +299,5 @@ flowchart TD
 - [ ] Known limitations and deliberate omissions, covering `requirements.md` section 2.3
 - [ ] Every checkbox in `requirements.md` section 10 confirmed
 - [ ] Setup instructions followed literally in a fresh clone by someone with no prior context, and corrected wherever they were ambiguous
-- [ ] Repository access granted to `NawyDevHiring` if private
 
 **Exit condition:** the definition of done in `requirements.md` section 10 is fully satisfied.
