@@ -275,6 +275,8 @@ Collections are wrapped:
 
 Single resources are returned bare, with no wrapper.
 
+`GET /projects` (7.7) and `GET /developers` (7.8) are explicitly not paginated, so they use the collection wrapper without pagination `meta`: `{ "data": [{ "...": "resource" }] }`.
+
 Errors always use this shape:
 
 ```json
