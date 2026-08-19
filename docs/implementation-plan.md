@@ -73,22 +73,24 @@ flowchart TD
 
 **Goal:** both required read endpoints, fully specified and fully tested.
 
-- [ ] `ApartmentsModule` with controller, service, and repository, respecting the one-directional layering
-- [ ] `GET /api/v1/apartments` with `q`, `projectId`, `minPrice`, `maxPrice`, `bedrooms`, `status`, `sort`, `page`, `limit` (sections 7.2, BR-8 to BR-14)
-- [ ] `GET /api/v1/apartments/:id` returning `ApartmentDetail` with nested project and developer (7.3)
-- [ ] `GET /api/v1/projects` and `GET /api/v1/developers` with their counts (7.7, 7.8)
-- [ ] Query DTOs with `class-validator` and `class-transformer`; global `ValidationPipe` with `whitelist`, `forbidNonWhitelisted`, `transform` (BR-23)
-- [ ] Explicit mappers producing DTOs; no entity ever returned from a controller
-- [ ] Global exception filter emitting the exact error shape from 7.1
-- [ ] Pagination envelope from 7.1, applied via a reusable response type
-- [ ] Global prefix `/api/v1`
+- [x] `ApartmentsModule` with controller, service, and repository, respecting the one-directional layering
+- [x] `GET /api/v1/apartments` with `q`, `projectId`, `minPrice`, `maxPrice`, `bedrooms`, `status`, `sort`, `page`, `limit` (sections 7.2, BR-8 to BR-14)
+- [x] `GET /api/v1/apartments/:id` returning `ApartmentDetail` with nested project and developer (7.3)
+- [x] `GET /api/v1/projects` and `GET /api/v1/developers` with their counts (7.7, 7.8)
+- [x] Query DTOs with `class-validator` and `class-transformer`; global `ValidationPipe` with `whitelist`, `forbidNonWhitelisted`, `transform` (BR-23)
+- [x] Explicit mappers producing DTOs; no entity ever returned from a controller
+- [x] Global exception filter emitting the exact error shape from 7.1
+- [x] Pagination envelope from 7.1, applied via a reusable response type
+- [x] Global prefix `/api/v1`
 
 **Tests:**
 
-- Unit tests for the service covering BR-8 through BR-14, each citing its BR number
-- Integration tests for all four endpoints against a real PostgreSQL instance, including: combined `q` plus filters, whitespace-only `q` being ignored, `page` past the end returning empty `data` with correct `meta`, `minPrice > maxPrice` returning 400, unknown query parameter returning 400, soft-deleted apartment returning 404
+- [x] Unit tests for the service covering BR-8 through BR-14, each citing its BR number
+- [x] Integration tests for all four endpoints against a real PostgreSQL instance, including: combined `q` plus filters, whitespace-only `q` being ignored, `page` past the end returning empty `data` with correct `meta`, `minPrice > maxPrice` returning 400, unknown query parameter returning 400, soft-deleted apartment returning 404
 
 **Exit condition:** every case above passes against real PostgreSQL. SQLite is not an acceptable substitute; partial indexes and `ILIKE` semantics must be genuinely exercised.
+
+**Note:** `GET /projects` and `GET /developers` return `{ "data": [...] }` with no `meta` key — confirmed with the user, since section 7.1's pagination `meta` (`page`/`limit`/`total`/`totalPages`) doesn't apply to these explicitly "not paginated" endpoints.
 
 ---
 
