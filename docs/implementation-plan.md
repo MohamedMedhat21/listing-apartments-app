@@ -238,15 +238,15 @@ flowchart TD
 
 **Goal:** the add capability is usable through the UI, not just the API.
 
-- [ ] `/login` page posting to `POST /api/v1/auth/login`
-- [ ] Access token held client-side and attached as `Authorization: Bearer` on mutating requests
-- [ ] Token validated on load via `GET /api/v1/auth/me`, clearing it if rejected
-- [ ] Client-side guard redirecting `/apartments/new` to `/login` when unauthenticated
-- [ ] `/apartments/new` form using react-hook-form with a zod schema derived from the same shared types the API validates against
-- [ ] Project select populated from `GET /api/v1/projects`
-- [ ] Inline field errors, plus server-side 409 and 422 surfaced against the relevant field rather than as a bare toast
-- [ ] Submit disabled while in flight; success redirects to the new apartment's details page
-- [ ] Header reflects authentication state and offers logout
+- [x] `/login` page posting to `POST /api/v1/auth/login`
+- [x] Access token held client-side and attached as `Authorization: Bearer` on mutating requests
+- [x] Token validated on load via `GET /api/v1/auth/me`, clearing it if rejected
+- [x] Client-side guard redirecting `/apartments/new` to `/login` when unauthenticated
+- [x] `/apartments/new` form using react-hook-form with a zod schema derived from the same shared types the API validates against
+- [x] Project select populated from `GET /api/v1/projects`
+- [x] Inline field errors, plus server-side 409 and 422 surfaced against the relevant field rather than as a bare toast
+- [x] Submit disabled while in flight; success redirects to the new apartment's details page
+- [x] Header reflects authentication state and offers logout
 
 **Tests:** component tests for validation errors, for the 409 duplicate case mapping onto the `unitNumber` field, and for the unauthenticated redirect.
 
