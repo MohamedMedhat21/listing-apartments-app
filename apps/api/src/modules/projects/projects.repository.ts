@@ -30,6 +30,17 @@ export class ProjectsRepository {
     );
   }
 
+  /** BR-2: whether `id` refers to a project that exists and is not
+   * soft-deleted, used when validating `projectId` on apartment writes. */
+  async existsLiveById(id: string): Promise<boolean> {
+    const count = await this.repository
+      .createQueryBuilder('project')
+      .where('project.id = :id', { id })
+      .andWhere('project.deletedAt IS NULL')
+      .getCount();
+    return count > 0;
+  }
+
   /** Live (non-soft-deleted) apartment count per project, for
    * `apartmentCount` in the 7.7 response. Queries the apartments table
    * directly rather than via ApartmentsRepository, since this count is

@@ -7,6 +7,10 @@ import { ProjectsRepository } from './projects.repository';
 export class ProjectsService {
   constructor(private readonly projectsRepository: ProjectsRepository) {}
 
+  existsLiveById(id: string): Promise<boolean> {
+    return this.projectsRepository.existsLiveById(id);
+  }
+
   async listAll(): Promise<ProjectSummaryDto[]> {
     const [projects, apartmentCountByProjectId] = await Promise.all([
       this.projectsRepository.findAllLive(),

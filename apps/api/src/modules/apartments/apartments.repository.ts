@@ -1,7 +1,7 @@
 import { ApartmentSortOption, ApartmentStatus } from '@apartments/shared';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { Apartment } from './entities/apartment.entity';
 
 export interface ApartmentListFilters {
@@ -101,5 +101,40 @@ export class ApartmentsRepository {
         .andWhere('developer.id IS NOT NULL')
         .getOne()
     );
+  }
+
+  /** BR-3, BR-7: used by the service as a readable pre-check before insert
+   * or update; the partial unique index (`uq_apartments_project_id_unit_number_live`)
+   * remains the authority against races. */
+  async existsLiveByProjectAndUnitNumber(
+    projectId: string,
+    unitNumber: string,
+    excludeApartmentId?: string,
+  ): Promise<boolean> {
+    const qb = this.repository
+      .createQueryBuilder('apartment')
+      .where('apartment.projectId = :projectId', { projectId })
+      .andWhere('apartment.unitNumber = :unitNumber', { unitNumber })
+      .andWhere('apartment.deletedAt IS NULL');
+
+    if (excludeApartmentId) {
+      qb.andWhere('apartment.id != :excludeApartmentId', { excludeApartmentId });
+    }
+
+    return (await qb.getCount()) > 0;
+  }
+
+  async createOne(data: DeepPartial<Apartment>): Promise<Apartment> {
+    return this.repository.save(this.repository.create(data));
+  }
+
+  async updateOne(id: string, data: Partial<Apartment>): Promise<void> {
+    await this.repository.update(id, data);
+  }
+
+  /** BR-6: sets `deletedAt`; the caller is responsible for the 404 check on
+   * an already-deleted or non-existent row before calling this. */
+  async softDeleteOne(id: string): Promise<void> {
+    await this.repository.softDelete(id);
   }
 }

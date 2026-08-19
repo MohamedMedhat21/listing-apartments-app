@@ -122,16 +122,21 @@ flowchart TD
 
 **Goal:** the required add endpoint plus update and soft delete, all ADMIN-protected.
 
-- [ ] `POST /api/v1/apartments` (7.4), guarded, returning 201 with `ApartmentDetail`
-- [ ] `PATCH /api/v1/apartments/:id` (7.5), guarded, requiring at least one field
-- [ ] `DELETE /api/v1/apartments/:id` (7.6), guarded, soft delete returning 204
-- [ ] Referential check on `projectId` returning 422 (BR-2)
-- [ ] Duplicate unit number returning 409, translating the database index violation into a readable message (BR-3)
-- [ ] All reads confirmed to exclude soft-deleted rows after a delete (BR-5)
+- [x] `POST /api/v1/apartments` (7.4), guarded, returning 201 with `ApartmentDetail`
+- [x] `PATCH /api/v1/apartments/:id` (7.5), guarded, requiring at least one field
+- [x] `DELETE /api/v1/apartments/:id` (7.6), guarded, soft delete returning 204
+- [x] Referential check on `projectId` returning 422 (BR-2)
+- [x] Duplicate unit number returning 409, translating the database index violation into a readable message (BR-3)
+- [x] All reads confirmed to exclude soft-deleted rows after a delete (BR-5)
 
-**Tests:** create success; create with a non-existent `projectId` returning 422; duplicate live unit number returning 409; same unit number accepted after the original is soft-deleted (BR-7); unauthenticated write returning 401; deleted apartment absent from list and returning 404 on details; second delete returning 404 (BR-6); partial update leaving untouched fields unchanged.
+**Tests:**
+
+- [x] create success; create with a non-existent `projectId` returning 422; duplicate live unit number returning 409; same unit number accepted after the original is soft-deleted (BR-7); unauthenticated write returning 401; deleted apartment absent from list and returning 404 on details; second delete returning 404 (BR-6); partial update leaving untouched fields unchanged
+- [x] a valid non-ADMIN token returning 403 (BR-19), a projectId move on `PATCH` re-validated against BR-2/BR-3, and unknown body properties / non-http(s) `imageUrls` rejected with 400
 
 **Exit condition:** every endpoint in section 7 exists, matches the contract, and has integration coverage.
+
+**Note:** `CreateApartmentDto`/`UpdateApartmentDto` deliberately have no field initializers. Under this repo's `tsconfig` (`target: ES2022`), `useDefineForClassFields` defaults to true, so every declared class field — even an unset optional one — becomes its own property equal to `undefined` once `class-transformer` builds the DTO. `ApartmentsService.update` and `mappers/apartment.mapper.ts#toApartmentUpdateData` check each field against `undefined` explicitly rather than trusting `Object.keys(dto)` or spreading the DTO into the repository update, which would otherwise silently NULL every field the client left untouched.
 
 ---
 
