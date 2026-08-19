@@ -11,7 +11,11 @@ loadEnvConfig(
   true,
 );
 
+const monorepoRoot = resolve(process.cwd(), '../..');
+
 const nextConfig: NextConfig = {
+  output: 'standalone',
+  outputFileTracingRoot: monorepoRoot,
   images: {
     // BR-17 permits any valid external http(s) URL, so a finite remote-host
     // allowlist cannot represent the API contract.

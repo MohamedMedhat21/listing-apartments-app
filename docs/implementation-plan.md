@@ -258,15 +258,15 @@ flowchart TD
 
 **Goal:** the assignment's single-command requirement, verified from a clean state.
 
-- [ ] `apps/api/Dockerfile`: multi-stage, Alpine base, non-root user, production-only dependencies in the final stage
-- [ ] `apps/web/Dockerfile`: multi-stage, Alpine base, Next.js standalone output, non-root user
-- [ ] `docker-compose.yml` with `db`, `api`, and `web`; Postgres 18 Alpine with a named volume
-- [ ] Healthchecks on all three services; `depends_on` using `condition: service_healthy`
-- [ ] API entrypoint running migrations then the idempotent seed before starting the server
-- [ ] Environment wiring: web reaches the API internally as `http://api:4000` server-side and via the public URL from the browser; CORS allowlist includes the web origin
-- [ ] Ports: web 3000, api 4000, db 5432
-- [ ] `docker-compose.dev.yml` override adding bind mounts and hot reload
-- [ ] `.dockerignore` keeping `node_modules` and build output out of the build context
+- [x] `apps/api/Dockerfile`: multi-stage, Alpine base, non-root user, production-only dependencies in the final stage
+- [x] `apps/web/Dockerfile`: multi-stage, Alpine base, Next.js standalone output, non-root user
+- [x] `docker-compose.yml` with `db`, `api`, and `web`; Postgres 18 Alpine with a named volume
+- [x] Healthchecks on all three services; `depends_on` using `condition: service_healthy`
+- [x] API entrypoint running migrations then the idempotent seed before starting the server
+- [x] Environment wiring: web reaches the API internally as `http://api:4000` server-side and via the public URL from the browser; CORS allowlist includes the web origin
+- [x] Ports: web 3000, api 4000, db 5432
+- [x] `docker-compose.dev.yml` override adding bind mounts and hot reload
+- [x] `.dockerignore` keeping `node_modules` and build output out of the build context
 
 **Exit condition:** in a fresh clone with no local Node installed, `docker compose up` yields a populated, browsable app at `localhost:3000` with working search and a working add form. Verified by tearing down volumes and repeating.
 
