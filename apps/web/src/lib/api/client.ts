@@ -92,7 +92,11 @@ export class ApiClient {
 
   constructor(
     baseUrl: string,
-    private readonly fetchImplementation: FetchImplementation = fetch,
+    // Bound to globalThis: native `fetch` requires its receiver to be the
+    // global scope, but this method is invoked as `this.fetchImplementation(...)`,
+    // whose receiver is the ApiClient instance and throws "Illegal invocation"
+    // unless the default is explicitly bound.
+    private readonly fetchImplementation: FetchImplementation = fetch.bind(globalThis),
   ) {
     let parsedUrl: URL;
     try {

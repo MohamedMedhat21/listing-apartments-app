@@ -40,6 +40,10 @@ interface FilterPanelProps {
 
 function FilterFields({ projects }: FilterPanelProps) {
   const { query, updateQuery } = useListingQuery();
+  const selectedProject =
+    query.projectId !== undefined
+      ? projects.find((project) => project.id === query.projectId)
+      : undefined;
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
@@ -56,7 +60,9 @@ function FilterFields({ projects }: FilterPanelProps) {
           }}
         >
           <SelectTrigger id="filter-project" className="min-h-11 w-full">
-            <SelectValue placeholder="All projects" />
+            <SelectValue placeholder="All projects">
+              {selectedProject ? selectedProject.name : null}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="any">All projects</SelectItem>
