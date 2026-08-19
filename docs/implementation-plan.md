@@ -276,11 +276,11 @@ flowchart TD
 
 **Goal:** the guarantees are automated rather than remembered.
 
-- [ ] `.github/workflows/ci.yml` on pushes and pull requests to `dev` and `main`: install, lint, typecheck, unit tests, and API integration tests against a PostgreSQL service container
-- [ ] Playwright configured in `apps/web/e2e`
-- [ ] E2E specs: browse the listing and open a details page; search narrowing results; log in and create an apartment
-- [ ] `.github/workflows/e2e.yml`, manually triggered (`workflow_dispatch`), bringing up Docker Compose and running Playwright against it
-- [ ] Both workflows upload failure artifacts (logs, Playwright traces)
+- [x] `.github/workflows/ci.yml` on pushes and pull requests to `dev` and `main`: install, lint, typecheck, unit tests, and API integration tests against a PostgreSQL service container
+- [x] Playwright configured in `apps/web/e2e`
+- [x] E2E specs: browse the listing and open a details page; search narrowing results; log in and create an apartment
+- [x] `.github/workflows/e2e.yml`, manually triggered (`workflow_dispatch`), bringing up Docker Compose and running Playwright against it
+- [x] Both workflows upload failure artifacts (logs, Playwright traces)
 
 **Exit condition:** CI is green on `dev`, and the manual E2E workflow passes against a Compose-hosted stack.
 

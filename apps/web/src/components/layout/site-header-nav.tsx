@@ -1,19 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 import { Button, buttonVariants } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/auth-context';
 import { cn } from '@/lib/utils';
 
+function useIsClient(): boolean {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
 export function SiteHeaderNav() {
   const { user, status, logout } = useAuth();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useIsClient();
 
   if (!mounted || status === 'loading') {
     return <div className="h-11 w-28 animate-pulse rounded-md bg-muted" aria-hidden="true" />;
