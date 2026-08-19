@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatArea, formatBathrooms, formatBedrooms, formatPrice } from './formatters';
+import { formatArea, formatBathrooms, formatBedrooms, formatFloor, formatPrice } from './formatters';
 
 describe('formatters', () => {
   it('formats prices as whole EGP amounts with thousands separators (BR-15)', () => {
@@ -16,5 +16,10 @@ describe('formatters', () => {
     expect(formatBedrooms(3)).toBe('3 bedrooms');
     expect(formatBathrooms(1)).toBe('1 bathroom');
     expect(formatBathrooms(2)).toBe('2 bathrooms');
+  });
+
+  it('formats floor values and handles missing floors', () => {
+    expect(formatFloor(7)).toBe('Floor 7');
+    expect(formatFloor(null)).toBe('Not specified');
   });
 });

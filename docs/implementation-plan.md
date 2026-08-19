@@ -219,14 +219,14 @@ flowchart TD
 
 **Goal:** the second required page.
 
-- [ ] `/apartments/[id]` as a Server Component
-- [ ] Image gallery with thumbnail navigation and a placeholder when `imageUrls` is empty
-- [ ] Specification grid: price, bedrooms, bathrooms, area, floor, status
-- [ ] Description, amenities list, address
-- [ ] Project and developer information, with a link back to the listing filtered by that project
-- [ ] `notFound()` for a missing or soft-deleted apartment
-- [ ] Per-apartment page metadata for shareable links
-- [ ] Responsive layout, single column on mobile
+- [x] `/apartments/[id]` as a Server Component
+- [x] Image gallery with thumbnail navigation and a placeholder when `imageUrls` is empty
+- [x] Specification grid: price, bedrooms, bathrooms, area, floor, status
+- [x] Description, amenities list, address
+- [x] Project and developer information, with a link back to the listing filtered by that project
+- [x] `notFound()` for a missing or soft-deleted apartment
+- [x] Per-apartment page metadata for shareable links
+- [x] Responsive layout, single column on mobile
 
 **Tests:** a component test for the gallery's empty-image fallback.
 
