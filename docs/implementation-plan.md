@@ -290,14 +290,14 @@ flowchart TD
 
 **Goal:** a reviewer can go from clone to running app without asking a question.
 
-- [ ] README: what it is, screenshots, tech stack with versions, prerequisites
-- [ ] Quick start: the exact single command, plus the seeded ADMIN credentials and where to change them
-- [ ] Endpoint reference table with a link to `/api/docs`
-- [ ] Local development instructions without Docker
-- [ ] Testing instructions covering unit, integration, and E2E
-- [ ] Project structure explanation
-- [ ] Known limitations and deliberate omissions, covering `requirements.md` section 2.3
-- [ ] Every checkbox in `requirements.md` section 10 confirmed
-- [ ] Setup instructions followed literally in a fresh clone by someone with no prior context, and corrected wherever they were ambiguous
+- [x] README: what it is, screenshots, tech stack with versions, prerequisites
+- [x] Quick start: the exact single command, plus the seeded ADMIN credentials and where to change them
+- [x] Endpoint reference table with a link to `/api/docs`
+- [x] Local development instructions without Docker
+- [x] Testing instructions covering unit, integration, and E2E
+- [x] Project structure explanation
+- [x] Known limitations and deliberate omissions, covering `requirements.md` section 2.3
+- [x] Every checkbox in `requirements.md` section 10 confirmed
+- [x] Setup instructions followed literally in a fresh clone by someone with no prior context, and corrected wherever they were ambiguous
 
 **Exit condition:** the definition of done in `requirements.md` section 10 is fully satisfied.
