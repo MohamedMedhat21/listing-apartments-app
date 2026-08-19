@@ -27,3 +27,11 @@ export function formatBedrooms(value: number): string {
 export function formatBathrooms(value: number): string {
   return formatCount(value, 'bathroom', 'bathrooms');
 }
+
+export function formatFloor(value: number | null): string {
+  if (value === null) {
+    return 'Not specified';
+  }
+
+  return `Floor ${wholeNumberFormatter.format(value)}`;
+}
