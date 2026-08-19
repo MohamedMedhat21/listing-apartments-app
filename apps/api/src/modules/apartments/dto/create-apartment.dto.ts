@@ -1,4 +1,4 @@
-import { ApartmentStatus } from '@apartments/shared';
+import { ApartmentStatus, type CreateApartmentRequest } from '@apartments/shared';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
@@ -22,7 +22,7 @@ import {
  * so numbers and enums already arrive as their real JS types — no
  * `@Transform` coercion is needed here.
  */
-export class CreateApartmentDto {
+export class CreateApartmentDto implements CreateApartmentRequest {
   @ApiProperty({ minLength: 1, maxLength: 150, example: 'Skyline A1' })
   @IsString()
   @MinLength(1)

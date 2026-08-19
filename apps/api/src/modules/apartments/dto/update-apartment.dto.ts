@@ -1,4 +1,4 @@
-import { ApartmentStatus } from '@apartments/shared';
+import { ApartmentStatus, type UpdateApartmentRequest } from '@apartments/shared';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
@@ -24,7 +24,7 @@ import {
  * `toApartmentUpdateData` in `mappers/apartment.mapper.ts` for why none of
  * these fields may have a default initializer.
  */
-export class UpdateApartmentDto {
+export class UpdateApartmentDto implements UpdateApartmentRequest {
   @ApiPropertyOptional({ minLength: 1, maxLength: 150 })
   @IsOptional()
   @IsString()

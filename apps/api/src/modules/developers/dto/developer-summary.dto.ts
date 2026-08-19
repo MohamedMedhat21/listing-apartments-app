@@ -1,7 +1,1 @@
-// docs/requirements.md section 7.8.
-export interface DeveloperSummaryDto {
-  id: string;
-  name: string;
-  logoUrl: string | null;
-  projectCount: number;
-}
+export type { DeveloperSummary as DeveloperSummaryDto } from '@apartments/shared';
