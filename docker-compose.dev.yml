@@ -1,0 +1,25 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: development
+    volumes:
+      - ./apps/api/src:/app/apps/api/src
+      - ./packages/shared/src:/app/packages/shared/src
+    environment:
+      NODE_ENV: development
+      POSTGRES_HOST: db
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: development
+    volumes:
+      - ./apps/web/src:/app/apps/web/src
+      - ./packages/shared/src:/app/packages/shared/src
+    environment:
+      NODE_ENV: development
+      INTERNAL_API_URL: http://api:4000/api/v1
+    command: ['npm', 'run', 'dev', '--workspace', 'apps/web']
