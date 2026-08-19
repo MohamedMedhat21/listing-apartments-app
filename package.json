@@ -52,5 +52,9 @@
     "bcrypt@6.0.0": true,
     "@nestjs/core@10.4.22": true,
     "unrs-resolver@1.12.2": true
+  },
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1"
   }
 }

@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule, ThrottlerModuleOptions } from '@nestjs/throttler';
+import { LoggerModule } from 'nestjs-pino';
 import type { Request } from 'express';
 import { AuthModule } from './auth/auth.module';
 import { AppConfigService } from './config/app-config.service';
 import { AppConfigModule } from './config/config.module';
+import { buildLoggerParams } from './config/logger.config';
 import { DatabaseModule } from './database/database.module';
+import { HealthModule } from './health/health.module';
 import { ApartmentsModule } from './modules/apartments/apartments.module';
 import { DevelopersModule } from './modules/developers/developers.module';
 import { ProjectsModule } from './modules/projects/projects.module';
@@ -18,6 +21,11 @@ const LOGIN_PATH = '/api/v1/auth/login';
 @Module({
   imports: [
     AppConfigModule,
+    LoggerModule.forRootAsync({
+      imports: [AppConfigModule],
+      inject: [AppConfigService],
+      useFactory: buildLoggerParams,
+    }),
     DatabaseModule,
     ThrottlerModule.forRootAsync({
       imports: [AppConfigModule],
@@ -42,6 +50,7 @@ const LOGIN_PATH = '/api/v1/auth/login';
       inject: [AppConfigService],
     }),
     AuthModule,
+    HealthModule,
     ApartmentsModule,
     ProjectsModule,
     DevelopersModule,

@@ -10,12 +10,30 @@ interface ErrorResponseBody {
   path: string;
 }
 
+interface TerminusHealthCheckResult {
+  status: string;
+  info: Record<string, unknown>;
+  error: Record<string, unknown>;
+  details: Record<string, unknown>;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
 function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string');
+}
+
+/** `@nestjs/terminus` throws `ServiceUnavailableException` with this body (7.11). */
+function isTerminusHealthCheckResult(value: unknown): value is TerminusHealthCheckResult {
+  return (
+    isRecord(value) &&
+    typeof value.status === 'string' &&
+    isRecord(value.info) &&
+    isRecord(value.error) &&
+    isRecord(value.details)
+  );
 }
 
 /**
@@ -26,6 +44,10 @@ function isStringArray(value: unknown): value is string[] {
  * only adds `timestamp` and `path`, and gives unexpected (non-HTTP) errors a
  * safe generic 500 body instead of leaking internals (BR-21: never a
  * passwordHash or other secret in an error message).
+ *
+ * Terminus health-check failures (7.11) are the one exception: they already
+ * carry the `{ status, info, error, details }` body and must pass through
+ * unchanged rather than being re-shaped into section 7.1.
  */
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -34,9 +56,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
+    if (exception instanceof HttpException) {
+      const statusCode = exception.getStatus();
+      const responseBody = exception.getResponse();
+      if (isTerminusHealthCheckResult(responseBody)) {
+        response.status(statusCode).json(responseBody);
+        return;
+      }
+    }
+
     const { statusCode, message, error } = this.resolveBody(exception);
 
-    if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
+    if (statusCode === HttpStatus.INTERNAL_SERVER_ERROR) {
       console.error('Unhandled exception:', exception);
     }
 

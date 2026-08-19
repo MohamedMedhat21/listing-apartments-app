@@ -144,15 +144,25 @@ flowchart TD
 
 **Goal:** the backend is documented and observable.
 
-- [ ] `@nestjs/swagger` at `/api/docs`, documenting every endpoint including error responses and enum values
-- [ ] DTOs annotated so the generated schema is accurate rather than merely present
-- [ ] `nestjs-pino` structured JSON logging with a per-request correlation ID, with tokens and hashes redacted
-- [ ] `GET /health` via `@nestjs/terminus` including a database connectivity check (7.11)
-- [ ] CORS restricted to an explicit origin allowlist from the environment
-- [ ] `helmet` for baseline security headers
-- [ ] `enableShutdownHooks` for graceful `SIGTERM` handling
+- [x] `@nestjs/swagger` at `/api/docs`, documenting every endpoint including error responses and enum values
+- [x] DTOs annotated so the generated schema is accurate rather than merely present
+- [x] `nestjs-pino` structured JSON logging with a per-request correlation ID, with tokens and hashes redacted
+- [x] `GET /health` via `@nestjs/terminus` including a database connectivity check (7.11)
+- [x] CORS restricted to an explicit origin allowlist from the environment
+- [x] `helmet` for baseline security headers
+- [x] `enableShutdownHooks` for graceful `SIGTERM` handling
+
+**Tests:**
+
+- [x] `GET /health` returns 200 when PostgreSQL is reachable; returns 503 with Terminus `{ status: 'error', ... }` body when the database indicator fails
 
 **Exit condition:** `/api/docs` documents all ten endpoints and can drive a successful authenticated `POST` from the browser. `/health` returns 503 when the database is unreachable.
+
+**Notes:**
+
+- `DatabaseHealthIndicator` wraps the app's existing TypeORM `DataSource` (`SELECT 1`) rather than Terminus's `TypeOrmHealthIndicator`, which performs a separate `@nestjs/typeorm` package-resolution check that fails in this npm-workspaces layout even though TypeORM is configured and running.
+- Terminus health-check failures use the `{ status, info, error, details }` body (7.11), not section 7.1 — `AllExceptionsFilter` passes that shape through unchanged.
+- `class-validator` and `class-transformer` are also declared at the workspace root so hoisted `@nestjs/common` can resolve them for `ValidationPipe` (npm workspaces hoist `@nestjs/*` to the root but not every app dependency).
 
 ---
 
