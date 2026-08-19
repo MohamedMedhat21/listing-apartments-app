@@ -42,4 +42,20 @@ export class AppConfigService {
       password: this.configService.get('ADMIN_PASSWORD', { infer: true }),
     };
   }
+
+  get jwt(): { secret: string; expiresInSeconds: number } {
+    return {
+      secret: this.configService.get('JWT_SECRET', { infer: true }),
+      expiresInSeconds: this.configService.get('JWT_EXPIRES_IN', { infer: true }),
+    };
+  }
+
+  get throttle(): { ttlMs: number; limit: number; loginTtlMs: number; loginLimit: number } {
+    return {
+      ttlMs: this.configService.get('THROTTLE_TTL_MS', { infer: true }),
+      limit: this.configService.get('THROTTLE_LIMIT', { infer: true }),
+      loginTtlMs: this.configService.get('THROTTLE_LOGIN_TTL_MS', { infer: true }),
+      loginLimit: this.configService.get('THROTTLE_LOGIN_LIMIT', { infer: true }),
+    };
+  }
 }
