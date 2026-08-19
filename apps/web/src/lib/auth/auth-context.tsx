@@ -33,9 +33,8 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserSummary | null>(null);
-  const [status, setStatus] = useState<AuthStatus>(() =>
-    getStoredAccessToken() ? 'loading' : 'unauthenticated',
-  );
+  // Always start loading so SSR markup matches the client's first render.
+  const [status, setStatus] = useState<AuthStatus>('loading');
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
   const logout = useCallback(() => {
@@ -47,15 +46,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    const token = getStoredAccessToken();
 
-    if (!token) {
-      return;
-    }
+    async function bootstrapAuth(): Promise<void> {
+      const token = getStoredAccessToken();
 
-    createBrowserApiClient()
-      .getCurrentUser(token)
-      .then((currentUser) => {
+      if (!token) {
+        if (!cancelled) {
+          setStatus('unauthenticated');
+        }
+        return;
+      }
+
+      try {
+        const currentUser = await createBrowserApiClient().getCurrentUser(token);
         if (cancelled) {
           return;
         }
@@ -63,8 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAccessToken(token);
         setUser(currentUser);
         setStatus('authenticated');
-      })
-      .catch((error: unknown) => {
+      } catch (error: unknown) {
         if (cancelled) {
           return;
         }
@@ -76,7 +78,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAccessToken(null);
         setUser(null);
         setStatus('unauthenticated');
-      });
+      }
+    }
+
+    void bootstrapAuth();
 
     return () => {
       cancelled = true;
