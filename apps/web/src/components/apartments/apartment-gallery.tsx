@@ -65,13 +65,7 @@ export function ApartmentGallery({ imageUrls, unitName }: ApartmentGalleryProps)
                   isSelected ? 'border-primary' : 'border-transparent',
                 )}
               >
-                <Image
-                  src={url}
-                  alt=""
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                />
+                <Image src={url} alt="" fill sizes="80px" className="object-cover" />
               </button>
             );
           })}

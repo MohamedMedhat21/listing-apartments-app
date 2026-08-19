@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatArea, formatBathrooms, formatBedrooms, formatFloor, formatPrice } from './formatters';
+import {
+  formatArea,
+  formatBathrooms,
+  formatBedrooms,
+  formatFloor,
+  formatPrice,
+} from './formatters';
 
 describe('formatters', () => {
   it('formats prices as whole EGP amounts with thousands separators (BR-15)', () => {

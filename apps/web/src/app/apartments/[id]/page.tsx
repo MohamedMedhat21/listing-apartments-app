@@ -92,8 +92,7 @@ export default async function ApartmentDetailsPage({ params }: ApartmentDetailsP
               </div>
               <p className="text-lg font-semibold tabular-nums">{formatPrice(apartment.price)}</p>
               <p className="text-sm text-muted-foreground">
-                {apartment.project.name} · {apartment.project.city},{' '}
-                {apartment.project.district}
+                {apartment.project.name} · {apartment.project.city}, {apartment.project.district}
               </p>
             </header>
 
