@@ -1,11 +1,19 @@
 import { ApartmentSortOption, ApartmentStatus } from '@apartments/shared';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ApartmentsRepository } from './apartments.repository';
 import { ApartmentsService } from './apartments.service';
 import { Apartment } from './entities/apartment.entity';
+import { CreateApartmentDto } from './dto/create-apartment.dto';
 import { QueryApartmentsDto } from './dto/query-apartments.dto';
+import { UpdateApartmentDto } from './dto/update-apartment.dto';
 import { Developer } from '../developers/entities/developer.entity';
 import { Project } from '../projects/entities/project.entity';
+import { ProjectsService } from '../projects/projects.service';
 
 function makeDeveloper(overrides: Partial<Developer> = {}): Developer {
   return {
@@ -68,16 +76,36 @@ function makeQuery(overrides: Partial<QueryApartmentsDto> = {}): QueryApartments
   return Object.assign(dto, overrides);
 }
 
+function makeCreateDto(overrides: Partial<CreateApartmentDto> = {}): CreateApartmentDto {
+  const dto = new CreateApartmentDto();
+  dto.unitName = 'Skyline A1';
+  dto.unitNumber = 'A-101';
+  dto.projectId = 'project-1';
+  dto.price = 1_000_000;
+  dto.bedrooms = 2;
+  dto.bathrooms = 2;
+  dto.areaSqm = 120;
+  return Object.assign(dto, overrides);
+}
+
 describe('ApartmentsService', () => {
   let service: ApartmentsService;
   let repository: jest.Mocked<ApartmentsRepository>;
+  let projectsService: jest.Mocked<ProjectsService>;
 
   beforeEach(() => {
     repository = {
       findMany: jest.fn(),
       findByIdWithProjectAndDeveloper: jest.fn(),
+      existsLiveByProjectAndUnitNumber: jest.fn(),
+      createOne: jest.fn(),
+      updateOne: jest.fn(),
+      softDeleteOne: jest.fn(),
     } as unknown as jest.Mocked<ApartmentsRepository>;
-    service = new ApartmentsService(repository);
+    projectsService = {
+      existsLiveById: jest.fn(),
+    } as unknown as jest.Mocked<ProjectsService>;
+    service = new ApartmentsService(repository, projectsService);
   });
 
   it('BR-8: forwards a trimmed q so the repository can OR it across unitName/unitNumber/project.name', async () => {
@@ -233,6 +261,151 @@ describe('ApartmentsService', () => {
       id: 'dev-1',
       name: 'Test Developer',
       logoUrl: null,
+    });
+  });
+
+  describe('create', () => {
+    it('BR-2: rejects a projectId that does not reference a live project with 422', async () => {
+      projectsService.existsLiveById.mockResolvedValue(false);
+
+      await expect(service.create(makeCreateDto())).rejects.toThrow(UnprocessableEntityException);
+      expect(repository.createOne).not.toHaveBeenCalled();
+    });
+
+    it('BR-3: rejects a unit number already live in the project with 409', async () => {
+      projectsService.existsLiveById.mockResolvedValue(true);
+      repository.existsLiveByProjectAndUnitNumber.mockResolvedValue(true);
+
+      await expect(service.create(makeCreateDto())).rejects.toThrow(ConflictException);
+      expect(repository.createOne).not.toHaveBeenCalled();
+    });
+
+    it('BR-3: translates a database unique-violation race into 409', async () => {
+      projectsService.existsLiveById.mockResolvedValue(true);
+      repository.existsLiveByProjectAndUnitNumber.mockResolvedValue(false);
+      repository.createOne.mockRejectedValue({ code: '23505' });
+
+      await expect(service.create(makeCreateDto())).rejects.toThrow(ConflictException);
+    });
+
+    it('BR-16: defaults status to AVAILABLE when omitted', async () => {
+      projectsService.existsLiveById.mockResolvedValue(true);
+      repository.existsLiveByProjectAndUnitNumber.mockResolvedValue(false);
+      repository.createOne.mockResolvedValue(makeApartment({ id: 'new-id' }));
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValue(makeApartment({ id: 'new-id' }));
+
+      await service.create(makeCreateDto());
+
+      expect(repository.createOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: ApartmentStatus.AVAILABLE,
+          amenities: [],
+          imageUrls: [],
+        }),
+      );
+    });
+
+    it('creates then returns the full detail via getById', async () => {
+      projectsService.existsLiveById.mockResolvedValue(true);
+      repository.existsLiveByProjectAndUnitNumber.mockResolvedValue(false);
+      repository.createOne.mockResolvedValue(makeApartment({ id: 'new-id' }));
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValue(makeApartment({ id: 'new-id' }));
+
+      const result = await service.create(makeCreateDto());
+
+      expect(result.id).toBe('new-id');
+      expect(repository.findByIdWithProjectAndDeveloper).toHaveBeenCalledWith('new-id');
+    });
+  });
+
+  describe('update', () => {
+    function makeUpdateDto(overrides: Partial<UpdateApartmentDto> = {}): UpdateApartmentDto {
+      return Object.assign(new UpdateApartmentDto(), overrides);
+    }
+
+    it('rejects an empty body with 400 (at least one field required)', async () => {
+      await expect(service.update('apartment-1', makeUpdateDto())).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(repository.findByIdWithProjectAndDeveloper).not.toHaveBeenCalled();
+    });
+
+    it('BR-5/404: rejects an id the repository cannot find as live', async () => {
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValue(null);
+
+      await expect(
+        service.update('missing-id', makeUpdateDto({ price: 2_000_000 })),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('does not re-check projectId/unitNumber uniqueness when neither field is being changed', async () => {
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValueOnce(makeApartment());
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValueOnce(makeApartment());
+
+      await service.update('apartment-1', makeUpdateDto({ price: 2_000_000 }));
+
+      expect(projectsService.existsLiveById).not.toHaveBeenCalled();
+      expect(repository.existsLiveByProjectAndUnitNumber).not.toHaveBeenCalled();
+      expect(repository.updateOne).toHaveBeenCalledWith('apartment-1', { price: 2_000_000 });
+    });
+
+    it('BR-2: validates a newly provided projectId with 422 when it is not live', async () => {
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValue(makeApartment());
+      projectsService.existsLiveById.mockResolvedValue(false);
+
+      await expect(
+        service.update('apartment-1', makeUpdateDto({ projectId: 'other-project' })),
+      ).rejects.toThrow(UnprocessableEntityException);
+      expect(repository.updateOne).not.toHaveBeenCalled();
+    });
+
+    it('BR-3, BR-7: excludes the apartment itself from the duplicate unit-number check', async () => {
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValueOnce(makeApartment());
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValueOnce(makeApartment());
+      repository.existsLiveByProjectAndUnitNumber.mockResolvedValue(false);
+
+      await service.update('apartment-1', makeUpdateDto({ unitNumber: 'A-102' }));
+
+      expect(repository.existsLiveByProjectAndUnitNumber).toHaveBeenCalledWith(
+        'project-1',
+        'A-102',
+        'apartment-1',
+      );
+    });
+
+    it('BR-3: rejects a duplicate unitNumber within the (possibly new) project with 409', async () => {
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValue(makeApartment());
+      repository.existsLiveByProjectAndUnitNumber.mockResolvedValue(true);
+
+      await expect(
+        service.update('apartment-1', makeUpdateDto({ unitNumber: 'A-102' })),
+      ).rejects.toThrow(ConflictException);
+    });
+
+    it('leaves fields the client did not send untouched (a genuinely partial update)', async () => {
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValueOnce(makeApartment());
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValueOnce(makeApartment());
+
+      await service.update('apartment-1', makeUpdateDto({ floor: 5 }));
+
+      expect(repository.updateOne).toHaveBeenCalledWith('apartment-1', { floor: 5 });
+    });
+  });
+
+  describe('softDelete', () => {
+    it('BR-6: soft-deletes a live apartment', async () => {
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValue(makeApartment());
+
+      await service.softDelete('apartment-1');
+
+      expect(repository.softDeleteOne).toHaveBeenCalledWith('apartment-1');
+    });
+
+    it('BR-6: an already-deleted or non-existent apartment returns 404 rather than deleting again', async () => {
+      repository.findByIdWithProjectAndDeveloper.mockResolvedValue(null);
+
+      await expect(service.softDelete('missing-id')).rejects.toThrow(NotFoundException);
+      expect(repository.softDeleteOne).not.toHaveBeenCalled();
     });
   });
 });
