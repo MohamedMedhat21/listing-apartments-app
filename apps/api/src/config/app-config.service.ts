@@ -20,6 +20,10 @@ export class AppConfigService {
     return this.configService.get('API_PORT', { infer: true });
   }
 
+  get corsOrigins(): string[] {
+    return this.configService.get('CORS_ORIGIN', { infer: true });
+  }
+
   get database(): {
     host: string;
     port: number;

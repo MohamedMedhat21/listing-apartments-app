@@ -1,4 +1,5 @@
 import { ApartmentSortOption, ApartmentStatus } from '@apartments/shared';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsEnum,
@@ -44,6 +45,7 @@ function toNumberOrOriginal(value: unknown): unknown {
  * shape check, so it is enforced in `ApartmentsService`, not here.
  */
 export class QueryApartmentsDto {
+  @ApiPropertyOptional({ description: 'Free-text search (BR-8)', minLength: 1, maxLength: 100 })
   @IsOptional()
   @Transform(({ value }: { value: unknown }) => trimmedStringOrUndefined(value))
   @IsString()
@@ -51,36 +53,43 @@ export class QueryApartmentsDto {
   @MaxLength(100)
   q?: string;
 
+  @ApiPropertyOptional({ format: 'uuid' })
   @IsOptional()
   @IsUUID('4')
   projectId?: string;
 
+  @ApiPropertyOptional({ minimum: 0 })
   @IsOptional()
   @Transform(({ value }: { value: unknown }) => toNumberOrOriginal(value))
   @IsNumber()
   @Min(0)
   minPrice?: number;
 
+  @ApiPropertyOptional({ minimum: 0 })
   @IsOptional()
   @Transform(({ value }: { value: unknown }) => toNumberOrOriginal(value))
   @IsNumber()
   @Min(0)
   maxPrice?: number;
 
+  @ApiPropertyOptional({ minimum: 0 })
   @IsOptional()
   @Transform(({ value }: { value: unknown }) => toNumberOrOriginal(value))
   @IsInt()
   @Min(0)
   bedrooms?: number;
 
+  @ApiPropertyOptional({ enum: ApartmentStatus })
   @IsOptional()
   @IsEnum(ApartmentStatus)
   status?: ApartmentStatus;
 
+  @ApiPropertyOptional({ enum: ApartmentSortOption, default: ApartmentSortOption.CREATED_AT_DESC })
   @Transform(({ value }: { value: unknown }) => value ?? ApartmentSortOption.CREATED_AT_DESC)
   @IsEnum(ApartmentSortOption)
   sort: ApartmentSortOption = ApartmentSortOption.CREATED_AT_DESC;
 
+  @ApiPropertyOptional({ minimum: 1, default: 1 })
   @Transform(({ value }: { value: unknown }) =>
     value === undefined ? 1 : toNumberOrOriginal(value),
   )
@@ -88,6 +97,7 @@ export class QueryApartmentsDto {
   @Min(1)
   page: number = 1;
 
+  @ApiPropertyOptional({ minimum: 1, maximum: 50, default: 12 })
   @Transform(({ value }: { value: unknown }) =>
     value === undefined ? 12 : toNumberOrOriginal(value),
   )

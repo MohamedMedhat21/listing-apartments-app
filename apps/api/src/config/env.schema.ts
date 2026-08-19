@@ -9,6 +9,20 @@ export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   API_PORT: z.coerce.number().int().positive().default(4000),
 
+  // Comma-separated browser origins allowed to call the API (section 9).
+  CORS_ORIGIN: z
+    .string()
+    .min(1)
+    .transform((value) =>
+      value
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter((origin) => origin.length > 0),
+    )
+    .refine((origins) => origins.length > 0, {
+      message: 'CORS_ORIGIN must list at least one origin',
+    }),
+
   POSTGRES_HOST: z.string().min(1),
   POSTGRES_PORT: z.coerce.number().int().positive().default(5432),
   POSTGRES_DB: z.string().min(1),
