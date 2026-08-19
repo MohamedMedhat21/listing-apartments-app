@@ -170,17 +170,27 @@ flowchart TD
 
 **Goal:** the shell, the design system, and one real end-to-end data path.
 
-- [ ] Tailwind CSS 4 configured, with design tokens for colour, spacing, and radius
-- [ ] shadcn/ui initialized with only the components actually needed
-- [ ] Root layout: header, footer, font loading, metadata
-- [ ] Typed API client with a server-side variant using the internal Docker hostname and a browser variant using the public URL
-- [ ] Request and response types imported from `packages/shared`, never redeclared
-- [ ] EGP currency and number formatting helpers
-- [ ] Error boundary and `not-found` handling at the app level
+- [x] Tailwind CSS 4 configured, with design tokens for colour, spacing, and radius
+- [x] shadcn/ui initialized with only the components actually needed
+- [x] Root layout: header, footer, font loading, metadata
+- [x] Typed API client with a server-side variant using the internal Docker hostname and a browser variant using the public URL
+- [x] Request and response types imported from `packages/shared`, never redeclared
+- [x] EGP currency and number formatting helpers
+- [x] Error boundary and `not-found` handling at the app level
 
-**Tests:** unit tests for the formatting helpers and for the API client's error mapping.
+**Tests:**
+
+- [x] Unit tests for EGP, area, and specification formatting
+- [x] Unit tests for standard-envelope, non-contract, and network API error mapping
 
 **Exit condition:** a placeholder page renders real apartment data fetched from the running API.
+
+**Notes:**
+
+- HTTP request and response contracts now live in `packages/shared`; API DTO modules re-export or implement those contracts so the two applications cannot drift while NestJS retains its runtime validation decorators.
+- Next loads the repository-root `.env` explicitly because npm workspace scripts run with `apps/web` as their working directory. `INTERNAL_API_URL` points to localhost for direct development; P10 must override it with the `api` service hostname in Docker Compose.
+- `next/image` is configured as unoptimized because BR-17 permits arbitrary external http/https hosts, which cannot be represented by a finite `remotePatterns` allowlist.
+- The exit condition was verified against the running API and seeded PostgreSQL database: the Server Component rendered the live total of 40 apartments and the first apartment result.
 
 ---
 

@@ -1,4 +1,4 @@
-import { ApartmentSortOption, ApartmentStatus } from '@apartments/shared';
+import { ApartmentSortOption, ApartmentStatus, type ApartmentListQuery } from '@apartments/shared';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
@@ -44,7 +44,7 @@ function toNumberOrOriginal(value: unknown): unknown {
  * BR-14 (`minPrice` must not exceed `maxPrice`) is a business rule, not a
  * shape check, so it is enforced in `ApartmentsService`, not here.
  */
-export class QueryApartmentsDto {
+export class QueryApartmentsDto implements ApartmentListQuery {
   @ApiPropertyOptional({ description: 'Free-text search (BR-8)', minLength: 1, maxLength: 100 })
   @IsOptional()
   @Transform(({ value }: { value: unknown }) => trimmedStringOrUndefined(value))

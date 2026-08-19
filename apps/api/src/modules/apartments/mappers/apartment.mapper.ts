@@ -54,8 +54,8 @@ export function toApartmentDetailDto(apartment: Apartment): ApartmentDetailDto {
     status: apartment.status,
     amenities: apartment.amenities,
     imageUrls: apartment.imageUrls,
-    createdAt: apartment.createdAt,
-    updatedAt: apartment.updatedAt,
+    createdAt: apartment.createdAt.toISOString(),
+    updatedAt: apartment.updatedAt.toISOString(),
     project: {
       id: project.id,
       name: project.name,
