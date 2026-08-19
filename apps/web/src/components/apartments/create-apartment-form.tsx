@@ -126,27 +126,35 @@ export function CreateApartmentForm() {
           <Controller
             control={control}
             name="projectId"
-            render={({ field }) => (
-              <Select
-                value={field.value || undefined}
-                onValueChange={(value) => {
-                  if (value) {
-                    field.onChange(value);
-                  }
-                }}
-              >
-                <SelectTrigger id="projectId" className="min-h-11 w-full">
-                  <SelectValue placeholder="Select a project" />
-                </SelectTrigger>
-                <SelectContent>
-                  {projects.map((project) => (
-                    <SelectItem key={project.id} value={project.id}>
-                      {project.name} · {project.city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+            render={({ field }) => {
+              const selectedProject = projects.find((project) => project.id === field.value);
+
+              return (
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => {
+                    if (value) {
+                      field.onChange(value);
+                    }
+                  }}
+                >
+                  <SelectTrigger id="projectId" className="min-h-11 w-full">
+                    <SelectValue placeholder="Select a project">
+                      {selectedProject
+                        ? `${selectedProject.name} · ${selectedProject.city}`
+                        : null}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map((project) => (
+                      <SelectItem key={project.id} value={project.id}>
+                        {project.name} · {project.city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            }}
           />
           {projectsError ? <FieldError message={projectsError} /> : null}
           <FieldError message={errors.projectId?.message} />
