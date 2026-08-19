@@ -422,13 +422,13 @@ Must be usable and visually correct from 320px upward. Card grid targets one col
 
 The project is complete when all of the following are true:
 
-- [ ] `docker compose up` on a fresh clone produces a working, populated app with no manual steps
-- [ ] All ten API endpoints in section 7 behave exactly as specified, including every listed status code
-- [ ] Search, all filters, sorting, and pagination work together in combination, not just individually
-- [ ] Listing and details pages are correct and usable from 320px to desktop
-- [ ] Every endpoint has an integration test; every business rule in section 6 has a test citing its BR number
-- [ ] No skipped or commented-out tests
-- [ ] Swagger UI is reachable at `/api/docs` and documents every endpoint, including error responses
-- [ ] Lint, typecheck, and the full test suite pass in CI
-- [ ] README setup instructions have been followed literally from a fresh clone and verified to work
-- [ ] README documents the omissions in section 2.3
+- [x] `docker compose up` on a fresh clone produces a working, populated app with no manual steps
+- [x] All ten API endpoints in section 7 behave exactly as specified, including every listed status code
+- [x] Search, all filters, sorting, and pagination work together in combination, not just individually
+- [x] Listing and details pages are correct and usable from 320px to desktop
+- [x] Every endpoint has an integration test; every business rule in section 6 has a test citing its BR number
+- [x] No skipped or commented-out tests
+- [x] Swagger UI is reachable at `/api/docs` and documents every endpoint, including error responses
+- [x] Lint, typecheck, and the full test suite pass in CI
+- [x] README setup instructions have been followed literally from a fresh clone and verified to work
+- [x] README documents the omissions in section 2.3
