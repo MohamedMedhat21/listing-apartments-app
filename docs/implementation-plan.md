@@ -98,18 +98,23 @@ flowchart TD
 
 **Goal:** an ADMIN can obtain a token; nothing is protected yet.
 
-- [ ] `AuthModule` with `@nestjs/jwt` and a Passport JWT strategy
-- [ ] `POST /api/v1/auth/login` (7.9) returning `{ accessToken, expiresIn, user }`
-- [ ] `GET /api/v1/auth/me` (7.10)
-- [ ] `bcrypt` cost 12 for hashing and comparison (BR-21)
-- [ ] Identical failure response for unknown email and wrong password (BR-22)
-- [ ] `JwtAuthGuard` and a `RolesGuard` with an `@Roles(...)` decorator, returning 401 versus 403 correctly (BR-19)
-- [ ] `@nestjs/throttler`: 100/min globally, 5/min on login
-- [ ] JWT secret and expiry read from validated environment variables; the process refuses to start without a secret
+- [x] `AuthModule` with `@nestjs/jwt` and a Passport JWT strategy
+- [x] `POST /api/v1/auth/login` (7.9) returning `{ accessToken, expiresIn, user }`
+- [x] `GET /api/v1/auth/me` (7.10)
+- [x] `bcrypt` cost 12 for hashing and comparison (BR-21)
+- [x] Identical failure response for unknown email and wrong password (BR-22)
+- [x] `JwtAuthGuard` and a `RolesGuard` with an `@Roles(...)` decorator, returning 401 versus 403 correctly (BR-19)
+- [x] `@nestjs/throttler`: 100/min globally, 5/min on login
+- [x] JWT secret and expiry read from validated environment variables; the process refuses to start without a secret
 
-**Tests:** login success; wrong password and unknown email producing byte-identical responses; expired token rejected with 401; `passwordHash` absent from every response body (BR-21); login rate limit returning 429 on the sixth attempt.
+**Tests:**
+
+- [x] login success; wrong password and unknown email producing byte-identical responses; expired token rejected with 401; `passwordHash` absent from every response body (BR-21); login rate limit returning 429 on the sixth attempt
+- [x] `RolesGuard` unit tests (BR-19) — no route uses `@Roles(...)` yet, so its 401-vs-403 role comparison is proven directly rather than through a real protected endpoint
 
 **Exit condition:** a token can be obtained and verified, and no response anywhere leaks a hash.
+
+**Note:** `JWT_EXPIRES_IN` is parsed to whole seconds at the environment-validation boundary (accepts `"1h"`, `"30m"`, `"3600s"`, or a bare number of seconds) rather than passed through as a string — `@nestjs/config` writes the _validated_ value back into `process.env`, so the parser has to tolerate its own numeric output being re-parsed later in the same process (notably by the standalone TypeORM CLI/tests).
 
 ---
 

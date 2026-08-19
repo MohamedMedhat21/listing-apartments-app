@@ -1,5 +1,7 @@
-import { ApartmentStatus } from '@apartments/shared';
+import { ApartmentStatus, UserRole } from '@apartments/shared';
+import * as bcrypt from 'bcrypt';
 import { DataSource, DeepPartial } from 'typeorm';
+import { User } from '../../src/auth/entities/user.entity';
 import { Apartment } from '../../src/modules/apartments/entities/apartment.entity';
 import { Developer } from '../../src/modules/developers/entities/developer.entity';
 import { Project } from '../../src/modules/projects/entities/project.entity';
@@ -42,6 +44,23 @@ export async function createProject(
       developerId,
     }),
   );
+}
+
+export async function createUser(
+  dataSource: DataSource,
+  overrides: DeepPartial<User> & { password?: string } = {},
+): Promise<{ user: User; password: string }> {
+  const { password = 'correct-horse-battery-staple', ...rest } = overrides;
+  const repository = dataSource.getRepository(User);
+  const user = await repository.save(
+    repository.create({
+      email: unique('user').toLowerCase() + '@nawy.local',
+      passwordHash: await bcrypt.hash(password, 4), // low cost: this is test-only data
+      role: UserRole.ADMIN,
+      ...rest,
+    }),
+  );
+  return { user, password };
 }
 
 export async function createApartment(
