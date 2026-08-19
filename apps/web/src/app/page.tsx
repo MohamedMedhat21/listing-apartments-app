@@ -1,43 +1,73 @@
+import type { ProjectSummary } from '@apartments/shared';
+
+import { ApartmentGrid } from '@/components/apartments/apartment-grid';
+import { ListingEmptyState } from '@/components/apartments/listing-empty-state';
+import { ListingErrorState } from '@/components/apartments/listing-error-state';
+import { ListingPagination } from '@/components/apartments/listing-pagination';
+import { ListingToolbar } from '@/components/apartments/listing-toolbar';
 import { PageContainer } from '@/components/layout/page-container';
+import { ApiError } from '@/lib/api/client';
 import { createServerApiClient } from '@/lib/api/server';
-import { formatPrice } from '@/lib/formatters';
+import {
+  hasActiveListingFilters,
+  parseListingSearchParams,
+  resolveListingQuery,
+} from '@/lib/listing/search-params';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home() {
-  const apartments = await createServerApiClient().listApartments({ limit: 1 });
-  const firstApartment = apartments.data[0];
+export default async function Home({ searchParams }: PageProps<'/'>) {
+  const resolvedSearchParams = await searchParams;
+  const query = resolveListingQuery(parseListingSearchParams(resolvedSearchParams));
+  const api = createServerApiClient();
+
+  let projects: ProjectSummary[] = [];
+  let fetchError: string | null = null;
+  let apartmentsResponse: Awaited<ReturnType<typeof api.listApartments>> | null = null;
+
+  try {
+    const [apartmentsResult, projectsResult] = await Promise.all([
+      api.listApartments(query),
+      api.listProjects(),
+    ]);
+    apartmentsResponse = apartmentsResult;
+    projects = projectsResult.data;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      fetchError = error.message;
+    } else {
+      fetchError = 'The apartments service could not complete this request.';
+    }
+  }
+
+  const hasActiveFilters = hasActiveListingFilters(query);
 
   return (
     <section className="py-8">
       <PageContainer className="space-y-6">
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-primary">API connected</p>
+        <header className="space-y-2">
+          <p className="text-sm font-medium text-primary">Browse listings</p>
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             Apartments across Egypt
           </h1>
           <p className="max-w-2xl text-sm text-muted-foreground">
-            The frontend foundation is reading live apartment data. Search and filters arrive in the
-            next phase.
+            Search by unit name, number, or project. Filter by price, bedrooms, and availability,
+            then share the URL to revisit the same results.
           </p>
-        </div>
+        </header>
 
-        <div className="rounded-lg border bg-card p-6">
-          <p className="text-xs text-muted-foreground">Apartments available to browse</p>
-          <p className="mt-2 text-lg font-semibold tabular-nums">
-            {apartments.meta.total.toLocaleString('en-EG')}
-          </p>
-          {firstApartment ? (
-            <p className="mt-4 text-sm">
-              First result: <span className="font-semibold">{firstApartment.unitName}</span> in{' '}
-              {firstApartment.project.name} — {formatPrice(firstApartment.price)}
-            </p>
-          ) : (
-            <p className="mt-4 text-sm text-muted-foreground">
-              The API is reachable, but it currently contains no apartments.
-            </p>
-          )}
-        </div>
+        <ListingToolbar projects={projects} />
+
+        {fetchError ? (
+          <ListingErrorState message={fetchError} />
+        ) : apartmentsResponse && apartmentsResponse.data.length === 0 ? (
+          <ListingEmptyState hasActiveFilters={hasActiveFilters} />
+        ) : apartmentsResponse ? (
+          <div className="space-y-6">
+            <ApartmentGrid apartments={apartmentsResponse.data} />
+            <ListingPagination meta={apartmentsResponse.meta} />
+          </div>
+        ) : null}
       </PageContainer>
     </section>
   );

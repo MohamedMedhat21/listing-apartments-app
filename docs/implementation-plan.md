@@ -198,16 +198,16 @@ flowchart TD
 
 **Goal:** the primary page, including the bonus requirement.
 
-- [ ] `/` renders the first paint as a Server Component reading filters from `searchParams`
-- [ ] Responsive card grid: 1 column, 2 at `md`, 3 at `lg`, 4 at `xl`
-- [ ] Card shows cover image with placeholder fallback, unit name, unit number, project, city, price, bedrooms, bathrooms, area, status badge
-- [ ] Search input, debounced 400ms, writing `q` to the URL
-- [ ] Filters for project, price range, bedrooms, and status, collapsing behind a disclosure on mobile
-- [ ] Sort control covering the values in BR-13
-- [ ] Pagination control reflecting `meta`, with `page` in the URL
-- [ ] Loading skeletons matching the final card layout
-- [ ] Distinct empty state and error state; a failed request must never look like zero results
-- [ ] URL is the single source of UI state, so results are shareable and survive refresh and back-navigation
+- [x] `/` renders the first paint as a Server Component reading filters from `searchParams`
+- [x] Responsive card grid: 1 column, 2 at `md`, 3 at `lg`, 4 at `xl`
+- [x] Card shows cover image with placeholder fallback, unit name, unit number, project, city, price, bedrooms, bathrooms, area, status badge
+- [x] Search input, debounced 400ms, writing `q` to the URL
+- [x] Filters for project, price range, bedrooms, and status, collapsing behind a disclosure on mobile
+- [x] Sort control covering the values in BR-13
+- [x] Pagination control reflecting `meta`, with `page` in the URL
+- [x] Loading skeletons matching the final card layout
+- [x] Distinct empty state and error state; a failed request must never look like zero results
+- [x] URL is the single source of UI state, so results are shareable and survive refresh and back-navigation
 
 **Tests:** component tests for the search input's debounce and URL writing, the empty state, and the error state.
 
