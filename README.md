@@ -32,6 +32,15 @@ cp .env.example .env
 docker compose up
 ```
 
+On Windows **Command Prompt**, use `copy` instead of `cp`:
+
+```cmd
+git clone <repository-url>
+cd listing-apartments-app
+copy .env.example .env
+docker compose up
+```
+
 The first run builds images, starts PostgreSQL, runs migrations, seeds data, and brings up the API and web app. Startup typically takes a few minutes on a cold build.
 
 When containers are healthy:
