@@ -86,7 +86,7 @@ Do not implement these without an explicit decision to expand scope:
 
 Exact patch versions are pinned in each `package.json` at install time. Do not add a dependency that is not listed here without approval.
 
-**Accepted risk:** `npm audit` reports 3 high-severity findings (`multer`, `picomatch`, and `@nestjs/platform-express` itself) that are only fixable by bumping NestJS 10.x to 11.x. This is a deliberate decision to stay on the pinned version rather than take an unplanned major upgrade: `multer`'s CVEs are all denial-of-service via malicious multipart file uploads, and section 2.3 explicitly puts file upload out of scope — the vulnerable code path is never wired up, so it is not reachable attack surface in this application. All other vulnerabilities reachable through the pinned versions (`glob`, `tmp`, `webpack`, all confined to `@nestjs/cli`'s build-time tooling) are resolved via `overrides` in the root `package.json`.
+**Accepted risk:** the live advisory database now reports findings rooted in the pinned NestJS 10 ecosystem. npm's proposed remediations replace NestJS core, Swagger, or the CLI with version 11, which is an unplanned breaking upgrade. The high-severity findings are in `multer` (file upload is not wired up), Swagger's schema-generation dependencies (`js-yaml` and `lodash` do not process request data), and the CLI's build-time glob matcher (`picomatch`). Moderate findings also exist in Nest's HTTP stack and CLI dependencies. They are accepted for this time-boxed assignment rather than hidden behind `npm audit fix --force`; a production deployment would require a planned NestJS major-version upgrade and regression pass. The exact count is intentionally not frozen here because the advisory database changes independently of this repository.
 
 ---
 
@@ -275,6 +275,8 @@ Collections are wrapped:
 
 Single resources are returned bare, with no wrapper.
 
+`GET /projects` (7.7) and `GET /developers` (7.8) are explicitly not paginated, so they use the collection wrapper without pagination `meta`: `{ "data": [{ "...": "resource" }] }`.
+
 Errors always use this shape:
 
 ```json
@@ -420,13 +422,13 @@ Must be usable and visually correct from 320px upward. Card grid targets one col
 
 The project is complete when all of the following are true:
 
-- [ ] `docker compose up` on a fresh clone produces a working, populated app with no manual steps
-- [ ] All ten API endpoints in section 7 behave exactly as specified, including every listed status code
-- [ ] Search, all filters, sorting, and pagination work together in combination, not just individually
-- [ ] Listing and details pages are correct and usable from 320px to desktop
-- [ ] Every endpoint has an integration test; every business rule in section 6 has a test citing its BR number
-- [ ] No skipped or commented-out tests
-- [ ] Swagger UI is reachable at `/api/docs` and documents every endpoint, including error responses
-- [ ] Lint, typecheck, and the full test suite pass in CI
-- [ ] README setup instructions have been followed literally from a fresh clone and verified to work
-- [ ] README documents the omissions in section 2.3
+- [x] `docker compose up` on a fresh clone produces a working, populated app with no manual steps
+- [x] All ten API endpoints in section 7 behave exactly as specified, including every listed status code
+- [x] Search, all filters, sorting, and pagination work together in combination, not just individually
+- [x] Listing and details pages are correct and usable from 320px to desktop
+- [x] Every endpoint has an integration test; every business rule in section 6 has a test citing its BR number
+- [x] No skipped or commented-out tests
+- [x] Swagger UI is reachable at `/api/docs` and documents every endpoint, including error responses
+- [x] Lint, typecheck, and the full test suite pass in CI
+- [x] README setup instructions have been followed literally from a fresh clone and verified to work
+- [x] README documents the omissions in section 2.3

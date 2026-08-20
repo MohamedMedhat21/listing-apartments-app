@@ -28,6 +28,7 @@ The bonus requirement — search by unit name, unit number, or project — is tr
 | Frontend       | Next.js 16.x, App Router                                       |
 | Styling        | Tailwind CSS 4.x + shadcn/ui                                   |
 | Forms          | react-hook-form + zod                                          |
+| Validation     | zod (frontend forms; also the backend's env-schema validation) |
 | Repo           | npm workspaces: `apps/api`, `apps/web`, `packages/shared`      |
 | Auth           | `@nestjs/jwt` + Passport JWT, `bcrypt` cost 12                 |
 | API docs       | `@nestjs/swagger`                                              |
@@ -82,7 +83,8 @@ listing-apartments-app/
 │   └── e2e.yml                     manually triggered Playwright against Compose
 ├── docs/
 │   ├── requirements.md             SINGLE SOURCE OF TRUTH
-│   └── implementation-plan.md      phased build plan
+│   ├── implementation-plan.md      phased build plan
+│   └── ui-guidelines.md            frontend design tokens and layout conventions
 ├── packages/shared/                types, enums, and zod schemas used by both apps
 └── apps/
     ├── api/
@@ -252,6 +254,8 @@ Two long-lived branches:
 
 ## 11. Agent workflow rules
 
+### General
+
 - **Follow the phases in [docs/implementation-plan.md](docs/implementation-plan.md) in order.** Do not start a phase until the previous phase's exit condition is genuinely met — met, not approximately met.
 - **Write tests alongside the feature, in the same phase.** A phase is not done until its tests exist and pass. Never defer tests to a cleanup phase; that phase never arrives.
 - **No scope creep.** Implement what `docs/requirements.md` specifies and nothing more. If something outside it seems necessary or valuable, stop and ask.
@@ -261,6 +265,67 @@ Two long-lived branches:
 - **Report, do not paper over.** If you find a bug, contradiction, or mistake in these documents, say so plainly instead of coding around it.
 - **Verify rather than assume.** Before claiming a phase works, run it. Before claiming the stack starts, tear the volumes down and start it cold.
 - Do not commit secrets. `.env.example` holds placeholders only; real values stay in an untracked `.env`.
+
+### Frontend
+
+#### Architecture
+
+- Use feature-based folder structure.
+- Keep reusable UI components separate from feature-specific components.
+- Do not put business logic directly inside presentation components.
+- Prefer composition over deeply nested components.
+
+#### Components
+
+- Components should have a single clear responsibility.
+- Do not create duplicate components when an existing reusable component can be extended.
+- Keep components reasonably small.
+- Do not introduce abstractions without a concrete reuse case.
+
+#### State Management
+
+- Keep state as local as possible.
+- Use global state only when multiple unrelated features need the same state.
+- Treat server data separately from UI state.
+- Do not duplicate server state unnecessarily.
+
+#### API
+
+- Centralize API communication.
+- Do not call fetch/HTTP clients directly from presentation components.
+- Handle loading, error, and empty states explicitly.
+- Do not silently swallow API errors.
+
+#### Forms
+
+- Validate at the UI level.
+- Display validation errors next to the relevant fields.
+- Prevent duplicate submissions.
+- Handle server-side validation errors.
+
+#### Styling
+
+- Follow the project's design system.
+- Reuse existing spacing, typography, colors, and components.
+- Do not introduce arbitrary colors or spacing values.
+- Pages must be responsive.
+
+#### Accessibility
+
+- Use semantic HTML.
+- Interactive elements must be keyboard accessible.
+- Forms must have proper labels.
+- Don't use clickable divs when a button/link is appropriate.
+
+#### Testing
+
+- Test important user flows.
+- Test business-critical behavior rather than implementation details.
+- Do not modify tests simply to make them pass unless the test itself is incorrect.
+
+#### Agent behavior
+
+- Do not invent UI behavior that isn't specified.
 
 ---
 
