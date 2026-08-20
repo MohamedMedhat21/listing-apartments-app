@@ -1,10 +1,10 @@
 # Listing Apartments App
 
-A full-stack apartment listing application built for the Nawy Software Engineer take-home assignment. Browse seeded listings with search, filters, sorting, and pagination; open detail pages; and sign in as an admin to add apartments through the browser.
+A full-stack apartment listing application built for the Nawy Software Engineer take-home assignment. Browse seeded listings with search, filters, sorting, and pagination; open detail pages; and log in as an admin to add apartments through the browser.
 
 | Listing                                                               | Details                                                 | Admin login                                       |
 | --------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------- |
-| ![Listing page with search and filters](docs/screenshots/listing.png) | ![Apartment details page](docs/screenshots/details.png) | ![Admin sign-in page](docs/screenshots/login.png) |
+| ![Listing page with search and filters](docs/screenshots/listing.png) | ![Apartment details page](docs/screenshots/details.png) | ![Admin log in page](docs/screenshots/login.png) |
 
 ## Prerequisites
 

@@ -52,7 +52,7 @@ function LoginForm() {
         return;
       }
 
-      setFormError('Unable to sign in. Try again in a moment.');
+      setFormError('Unable to log in. Try again in a moment.');
     }
   });
 
@@ -91,7 +91,7 @@ function LoginForm() {
       ) : null}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'Signing in…' : 'Sign in'}
+        {isSubmitting ? 'Logging in…' : 'Log in'}
       </Button>
     </form>
   );
@@ -103,9 +103,9 @@ export default function LoginPage() {
       <PageContainer className="mx-auto max-w-md space-y-6">
         <header className="space-y-2">
           <p className="text-sm font-medium text-primary">Admin access</p>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Sign in</h1>
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Log in</h1>
           <p className="text-sm text-muted-foreground">
-            Sign in with your admin account to add apartments through the browser.
+            Log in with your admin account to add apartments through the browser.
           </p>
         </header>
 
