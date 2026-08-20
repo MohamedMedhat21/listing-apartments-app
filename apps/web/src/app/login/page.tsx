@@ -12,6 +12,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/lib/auth/auth-context';
+import { resolvePostLoginPath } from '@/lib/auth/post-login-redirect';
 import { ApiError } from '@/lib/api/client';
 import { cn } from '@/lib/utils';
 
@@ -35,8 +36,7 @@ function LoginForm() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      const nextPath = searchParams.get('next');
-      router.replace(nextPath && nextPath.startsWith('/') ? nextPath : '/apartments/new');
+      router.replace(resolvePostLoginPath(searchParams.get('next')));
     }
   }, [router, searchParams, status]);
 
@@ -45,8 +45,7 @@ function LoginForm() {
 
     try {
       await login(values.email, values.password);
-      const nextPath = searchParams.get('next');
-      router.replace(nextPath && nextPath.startsWith('/') ? nextPath : '/apartments/new');
+      router.replace(resolvePostLoginPath(searchParams.get('next')));
     } catch (error) {
       if (error instanceof ApiError) {
         setFormError(error.message);

@@ -15,6 +15,9 @@ test('log in and create an apartment', async ({ page }) => {
   await page.getByLabel('Password').fill(ADMIN_PASSWORD);
   await page.getByRole('button', { name: 'Sign in' }).click();
 
+  await expect(page).toHaveURL('/');
+
+  await page.getByRole('link', { name: 'Add apartment' }).click();
   await expect(page).toHaveURL(/\/apartments\/new/);
 
   const unitNumber = `E2E-${Date.now()}`;
