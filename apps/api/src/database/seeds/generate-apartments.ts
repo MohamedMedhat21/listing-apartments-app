@@ -1,5 +1,7 @@
 import { ApartmentStatus } from '@apartments/shared';
 
+import { hashString, pickApartmentImageUrls } from './apartment-image-urls';
+
 export interface ApartmentSeedInput {
   unitName: string;
   unitNumber: string;
@@ -38,16 +40,8 @@ const STATUS_CYCLE: ApartmentStatus[] = [
   ApartmentStatus.SOLD,
 ];
 
-const UNIT_TYPES = ['Apartment', 'Duplex', 'Penthouse', 'Studio'];
-
-// djb2, just to turn a project name into a stable numeric seed.
-function hashString(value: string): number {
-  let hash = 5381;
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash * 33) ^ value.charCodeAt(i);
-  }
-  return hash >>> 0;
-}
+const UNIT_TYPES = ['Apartment', 'Duplex', 'Penthouse', 'Studio'] as const;
+type UnitType = (typeof UNIT_TYPES)[number];
 
 // mulberry32 — small, deterministic PRNG so re-running the seed produces
 // byte-identical apartments every time (required for idempotency; see
@@ -63,20 +57,12 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-function pick<T>(rng: () => number, items: T[]): T {
+function pick<T>(rng: () => number, items: readonly T[]): T {
   const item = items[Math.floor(rng() * items.length)];
   if (item === undefined) {
     throw new Error('generate-apartments: pick() called with an empty array');
   }
   return item;
-}
-
-function pickImageUrls(rng: () => number, seedPrefix: string): string[] {
-  const count = Math.floor(rng() * 4); // 0-3 images, so some apartments have none (P8 fallback case)
-  return Array.from(
-    { length: count },
-    (_unused, index) => `https://picsum.photos/seed/${seedPrefix}-${index + 1}/800/600`,
-  );
 }
 
 export function generateApartmentsForProject(
@@ -125,7 +111,7 @@ export function generateApartmentsForProject(
       address: `Building ${buildingLetter}, ${projectName}`,
       status,
       amenities,
-      imageUrls: pickImageUrls(rng, seedSlug),
+      imageUrls: pickApartmentImageUrls(rng, unitType, seedSlug),
     });
   }
 
